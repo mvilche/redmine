@@ -1,0 +1,39 @@
+version: '3.7'
+services:
+  redmine:
+    build:
+     context: dockerfiles
+     dockerfile: Dockerfile
+    image: mvilche/redmine:4.0.3-alpine39
+    environment:
+     - DATABASE_NAME=redmine
+     - DATABASE_HOST=mysql
+     - DATABASE_USER=root
+     - DATABASE_PASSWORD=redmine
+     - USER_ID=1000
+    depends_on:
+     - mysql
+    volumes:
+     - $PWD/redmine:/opt/redmine
+    ports:
+     - "3000:3000"
+    networks:
+     - integracion
+
+
+  mysql:
+    image: mysql:5.7
+    environment:
+     - MYSQL_ROOT_PASSWORD=redmine
+     - MYSQL_DATABASE=redmine
+    volumes:
+     - $PWD/database:/var/lib/mysql
+    networks:
+     - integracion
+networks:
+  integracion:
+      driver: bridge
+      ipam:
+        driver: default
+        config:
+         - subnet: 142.248.0.0/16
